@@ -14,7 +14,14 @@ interface DatasetContextType {
 const DatasetContext = createContext<DatasetContextType | undefined>(undefined)
 
 export function DatasetProvider({ children }: { children: ReactNode }) {
-    const [datasets, setDatasets] = useState<Dataset[]>([])
+    const [datasets, setDatasets] = useState<Dataset[]>(() => {
+        try {
+            const saved = localStorage.getItem("datascope-datasets")
+            return saved ? JSON.parse(saved) : []
+        } catch {
+            return []
+        }
+    })
     const [currentDatasetId, setCurrentDatasetId] = useState<string | null>(null)
 
     const setCurrentDataset = (id: string | null) => {
