@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState, useEffect } from "react"
 import type { ReactNode } from "react"
 import type { Dataset, DataRecord } from "@/types/dataset"
 
@@ -23,6 +23,10 @@ export function DatasetProvider({ children }: { children: ReactNode }) {
         }
     })
     const [currentDatasetId, setCurrentDatasetId] = useState<string | null>(null)
+
+    useEffect(() => {
+        localStorage.setItem("datascope-datasets", JSON.stringify(datasets))
+    }, [datasets])
 
     const setCurrentDataset = (id: string | null) => {
         setCurrentDatasetId(id)
