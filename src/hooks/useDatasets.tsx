@@ -3,15 +3,18 @@ import { Dataset } from "@/types/dataset"
 
 interface DatasetContextType {
     datasets: Dataset[]
+    currentDatasetId: string | null
 }
 
 const DatasetContext = createContext<DatasetContextType | undefined>(undefined)
 
 export function DatasetProvider({ children }: { children: ReactNode }) {
     const [datasets, setDatasets] = useState<Dataset[]>([])
+    const [currentDatasetId, setCurrentDatasetId] = useState<string | null>(null)
 
     const value: DatasetContextType = {
-        datasets
+        datasets,
+        currentDatasetId
     }
 
     return (
