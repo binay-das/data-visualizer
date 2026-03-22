@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react"
 import type { ReactNode } from "react"
-import type { Dataset } from "@/types/dataset"
+import type { Dataset, DataRecord } from "@/types/dataset"
 
 interface DatasetContextType {
     datasets: Dataset[]
@@ -8,6 +8,7 @@ interface DatasetContextType {
     setCurrentDataset: (id: string | null) => void
     addDataset: (dataset: Dataset) => void
     deleteDataset: (id: string) => void
+    updateDatasetRows: (id: string, newRows: DataRecord[]) => void
 }
 
 const DatasetContext = createContext<DatasetContextType | undefined>(undefined)
@@ -32,12 +33,23 @@ export function DatasetProvider({ children }: { children: ReactNode }) {
         }
     }
 
+    const updateDatasetRows = (id: string, newRows: DataRecord[]) => {
+        setDatasets(prev =>
+            prev.map(d =>
+                d.id === id
+                    ? { ...d, rows: newRows, summary: { ...d.summary, rowCount: newRows.length } }
+                    : d
+            )
+        )
+    }
+
     const value: DatasetContextType = {
         datasets,
         currentDatasetId,
         setCurrentDataset,
         addDataset,
-        deleteDataset
+        deleteDataset,
+        updateDatasetRows
     }
 
     return (
