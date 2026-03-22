@@ -7,6 +7,7 @@ interface DatasetContextType {
     currentDatasetId: string | null
     setCurrentDataset: (id: string | null) => void
     addDataset: (dataset: Dataset) => void
+    deleteDataset: (id: string) => void
 }
 
 const DatasetContext = createContext<DatasetContextType | undefined>(undefined)
@@ -24,11 +25,19 @@ export function DatasetProvider({ children }: { children: ReactNode }) {
         setCurrentDatasetId(dataset.id)
     }
 
+    const deleteDataset = (id: string) => {
+        setDatasets(prev => prev.filter(d => d.id !== id))
+        if (currentDatasetId === id) {
+            setCurrentDatasetId(null)
+        }
+    }
+
     const value: DatasetContextType = {
         datasets,
         currentDatasetId,
         setCurrentDataset,
-        addDataset
+        addDataset,
+        deleteDataset
     }
 
     return (
