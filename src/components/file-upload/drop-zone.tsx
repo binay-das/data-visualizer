@@ -1,4 +1,4 @@
-import { useState, DragEvent } from "react";
+import { useState, type DragEvent } from "react";
 import { UploadCloud } from "lucide-react";
 
 interface DropZoneProps {
@@ -39,7 +39,7 @@ export function DropZone({ onFileDrop, isProcessing = false }: DropZoneProps) {
     return (
         <div className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/50"
                 } ${isProcessing ? "opacity-50 pointer-events-none" : "cursor-pointer"}`}
-                
+
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
