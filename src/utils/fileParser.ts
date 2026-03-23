@@ -1,4 +1,5 @@
 import Papa from 'papaparse'
+import * as XLSX from 'xlsx'
 import type { DataRecord } from '@/types/dataset'
 
 export const parseCSV = (file: File): Promise<DataRecord[]> => {
@@ -37,4 +38,32 @@ export const parseJSON = async (file: File): Promise<DataRecord[]> => {
     } catch (error) {
         throw new Error(`Failed to parse JSON: ${error instanceof Error ? error.message : "Unknown error"}`)
     }
+}
+
+export const parseExcel = async (file: File): Promise<DataRecord[]> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+            try {
+                const data = e.target?.result
+                const workbook = XLSX.read(data, {
+                    type: 'array'
+                })
+
+                const firstSheetName = workbook.SheetNames[0]
+
+                const worksheet = workbook.Sheets[firstSheetName]
+                const jsonData = XLSX.utils.sheet_to_json(worksheet)
+
+                resolve(jsonData as DataRecord[])
+            } catch (error) {
+                reject(new Error(`Failed to parse Excel file: ${error instanceof Error ? error.message : "Unknown error"}`))
+            }
+        }
+        reader.onerror = (error) => reject(error);
+
+
+        
+        reader.readAsArrayBuffer(file);
+    })
 }
