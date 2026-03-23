@@ -1,11 +1,21 @@
+import { useState } from "react";
+import { DropZone } from "@/components/file-upload/drop-zone";
+
 export default function Dashboard() {
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
+
+    const handleFileDrop = (file: File) => {
+        console.log("File dropped:", file);
+
+    }
+
     return (
-        <div className="container mx-auto py-10 px-4">
-            <h1 className="text-3xl font-bold tracking-tight mb-8">Dashboard</h1>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <div className="border rounded-xl p-6 bg-card flex flex-col items-center justify-center text-center h-48 cursor-pointer hover:border-primary transition-colors">
-                    <p className="font-medium text-lg">+ Upload New Dataset</p>
-                </div>
+        <div className="container mx-auto p-8 max-w-4xl">
+            <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+
+            <div className="bg-card rounded-xl border shadow-sm p-6 mb-8">
+                <h2 className="text-xl font-semibold mb-4">Upload Dataset</h2>
+                <DropZone onFileDrop={handleFileDrop} isProcessing={isProcessing} />
             </div>
         </div>
     )
