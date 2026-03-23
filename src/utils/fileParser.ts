@@ -63,7 +63,56 @@ export const parseExcel = async (file: File): Promise<DataRecord[]> => {
         reader.onerror = (error) => reject(error);
 
 
-        
+
         reader.readAsArrayBuffer(file);
     })
+}
+
+export const generateDataset = (
+    rawRows: DataRecord[],
+    fileName: string,
+    fileOriginalType: string
+): Dataset | null => {
+
+
+    if (!rawRows || rawRows.length === 0) return null
+
+    const firstRow = rawRows[0];
+    const columns = Object.keys(firstRow);
+
+    const datasetId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
+
+    const columnStats = columns.map(col => {
+        const val = firstRow[col];
+
+
+        let colType: "numeric" | "categorical" | "boolean" | "datetime" | "text" = "text";
+
+        if (typeof val === "number") colType = "numeric";
+
+        else if (typeof val === "boolean") colType = "boolean";
+
+        
+
+        return {
+            name: col,
+            type: colType,
+            uniqueCount: 0,
+            missingCount: 0
+        }
+    })
+
+    return {
+        id: datasetId,
+        name: fileName,
+        uploadedAt: new Date().toISOString(),
+        rows: rawRows,
+        columns,
+        summary: {
+            rowCount: rawRows.length,
+            columnCount: columns.length,
+            columns: columnStats
+        },
+        fileType: fileOriginalType
+    }
 }
