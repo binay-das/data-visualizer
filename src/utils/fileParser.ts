@@ -1,6 +1,6 @@
 import Papa from 'papaparse'
 import * as XLSX from 'xlsx'
-import type { DataRecord } from '@/types/dataset'
+import type { DataRecord, Dataset } from '@/types/dataset'
 
 export const parseCSV = (file: File): Promise<DataRecord[]> => {
     return new Promise((resolve, reject) => {
