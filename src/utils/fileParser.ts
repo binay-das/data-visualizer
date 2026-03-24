@@ -1,6 +1,7 @@
 import Papa from 'papaparse'
 import * as XLSX from 'xlsx'
 import type { DataRecord, Dataset } from '@/types/dataset'
+import { analyzeDataset } from './statistics'
 
 export const parseCSV = (file: File): Promise<DataRecord[]> => {
     return new Promise((resolve, reject) => {
@@ -77,42 +78,17 @@ export const generateDataset = (
 
     if (!rawRows || rawRows.length === 0) return null
 
-    const firstRow = rawRows[0];
-    const columns = Object.keys(firstRow);
-
     const datasetId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
 
-    const columnStats = columns.map(col => {
-        const val = firstRow[col];
-
-
-        let colType: "numeric" | "categorical" | "boolean" | "datetime" | "text" = "text";
-
-        if (typeof val === "number") colType = "numeric";
-
-        else if (typeof val === "boolean") colType = "boolean";
-
-        
-
-        return {
-            name: col,
-            type: colType,
-            uniqueCount: 0,
-            missingCount: 0
-        }
-    })
+    const summary = analyzeDataset(rawRows);
 
     return {
         id: datasetId,
         name: fileName,
         uploadedAt: new Date().toISOString(),
         rows: rawRows,
-        columns,
-        summary: {
-            rowCount: rawRows.length,
-            columnCount: columns.length,
-            columns: columnStats
-        },
+        columns: Object.keys(rawRows[0]),
+        summary,
         fileType: fileOriginalType
     }
 }

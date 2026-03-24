@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react"
 import type { ReactNode } from "react"
 import type { Dataset, DataRecord } from "@/types/dataset"
+import { analyzeDataset } from "@/utils/statistics";
 
 interface DatasetContextType {
     datasets: Dataset[]
@@ -48,7 +49,7 @@ export function DatasetProvider({ children }: { children: ReactNode }) {
         setDatasets(prev =>
             prev.map(d =>
                 d.id === id
-                    ? { ...d, rows: newRows, summary: { ...d.summary, rowCount: newRows.length } }
+                    ? { ...d, rows: newRows, summary: analyzeDataset(newRows) }
                     : d
             )
         )
