@@ -1,4 +1,4 @@
-import type { DataType, DataRecord, ColumnStats } from "@/types/dataset";
+import type { DataType, DataRecord, ColumnStats, DatasetSummary } from "@/types/dataset";
 
 
 
@@ -182,7 +182,7 @@ export function computeColumnStats(
                 const key = String(v);
                 freqMap[key] = (freqMap[key] || 0) + 1;
             });
-            
+
 
             topValues = Object.entries(freqMap)
                 .sort((a, b) => b[1] - a[1])
@@ -203,4 +203,26 @@ export function computeColumnStats(
 
         } as ColumnStats;
     });
+}
+
+export function analyzeDataset(rows: DataRecord[]): DatasetSummary {
+    if (!rows || rows.length === 0) {
+        return {
+            rowCount: 0,
+            columnCount: 0,
+            columns: []
+        };
+        
+    }
+
+    const columns = Object.keys(rows[0]);
+    const columnStats = computeColumnStats(rows, columns);
+
+
+
+    return {
+        rowCount: rows.length,
+        columnCount: columns.length,
+        columns: columnStats
+    };
 }
