@@ -129,7 +129,7 @@ export function computeColumnStats(
 
 
 
-        
+
 
         let numericStats: any;
 
@@ -145,21 +145,30 @@ export function computeColumnStats(
 
 
                 const median = sorted.length % 2 === 0
-                        ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
-                        : sorted[Math.floor(sorted.length / 2)];
+                    ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
+                    : sorted[Math.floor(sorted.length / 2)];
 
                 const variance = nums.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / nums.length;
 
                 const stdDev = Math.sqrt(variance);
+
+
+
+                const q1 = sorted[Math.floor(sorted.length * 0.25)];
+                const q3 = sorted[Math.floor(sorted.length * 0.75)];
+                const iqr = q3 - q1;
 
                 numericStats = {
                     min: Math.min(...nums),
                     max: Math.max(...nums),
                     mean,
                     median,
-                    stdDev
+                    stdDev,
+                    q1,
+                    q3,
+                    iqr
 
-
+                    
                 };
             }
         }
