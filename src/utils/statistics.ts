@@ -1,4 +1,6 @@
-import type { DataType, DataRecord } from "@/types/dataset";
+import type { DataType, DataRecord, ColumnStats } from "@/types/dataset";
+
+
 
 export function extractColumnValues(rows: DataRecord[], column: string): any[] {
     return rows.map(row => row[column]);
@@ -62,7 +64,7 @@ export function detectColumnType(values: any[]): DataType {
     // datetime
     const isDate = sample.every(v => {
         if (typeof v === 'number') {
-            
+
             return false;
 
         }
@@ -77,7 +79,7 @@ export function detectColumnType(values: any[]): DataType {
                 return false;
             }
 
-            // If it resembles purely a number, don't parse as date
+            // If purely a number, don't parse as date
             if (!isNaN(Number(trimmed))) {
                 return false;
             }
@@ -101,4 +103,35 @@ export function detectColumnType(values: any[]): DataType {
     }
 
     return 'text';
+}
+
+
+export function computeColumnStats(
+    rows: DataRecord[],
+    columns: string[]
+): ColumnStats[] {
+
+    return columns.map(column => {
+        const values = extractColumnValues(rows, column);
+
+        const type = detectColumnType(values);
+
+        const missingCount = values.filter(
+            v => v === null || v === undefined || v === ''
+        ).length;
+
+        const validValues = values.filter(
+            v => v !== null && v !== undefined && v !== ''
+        );
+
+        const uniqueSet = new Set(validValues.map(v => String(v)));
+        const uniqueCount = uniqueSet.size;
+
+        return {
+            name: column,
+            type,
+            uniqueCount,
+            missingCount,
+        } as ColumnStats;
+    });
 }
