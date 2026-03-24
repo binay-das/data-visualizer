@@ -127,6 +127,43 @@ export function computeColumnStats(
         const uniqueSet = new Set(validValues.map(v => String(v)));
         const uniqueCount = uniqueSet.size;
 
+
+
+        
+
+        let numericStats: any;
+
+        // numeric
+        if (type === "numeric") {
+            const nums = validValues.map(v => Number(v)).filter(v => !isNaN(v));
+
+            if (nums.length > 0) {
+                const sorted = [...nums].sort((a, b) => a - b);
+
+                const mean = nums.reduce((a, b) => a + b, 0) / nums.length;
+
+
+
+                const median = sorted.length % 2 === 0
+                        ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
+                        : sorted[Math.floor(sorted.length / 2)];
+
+                const variance = nums.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / nums.length;
+
+                const stdDev = Math.sqrt(variance);
+
+                numericStats = {
+                    min: Math.min(...nums),
+                    max: Math.max(...nums),
+                    mean,
+                    median,
+                    stdDev
+
+
+                };
+            }
+        }
+
         return {
             name: column,
             type,
