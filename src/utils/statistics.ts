@@ -168,9 +168,28 @@ export function computeColumnStats(
                     q3,
                     iqr
 
-                    
+
                 };
             }
+        }
+
+        let topValues: any;
+
+        if (type === "categorical" || type === "boolean") {
+            const freqMap: Record<string, number> = {};
+
+            validValues.forEach(v => {
+                const key = String(v);
+                freqMap[key] = (freqMap[key] || 0) + 1;
+            });
+            
+
+            topValues = Object.entries(freqMap)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(([value, count]) => ({ value, count }));
+
+
         }
 
         return {
@@ -178,6 +197,10 @@ export function computeColumnStats(
             type,
             uniqueCount,
             missingCount,
+            numericStats,
+            topValues
+
+
         } as ColumnStats;
     });
 }
