@@ -1,0 +1,104 @@
+import type { DataType, DataRecord } from "@/types/dataset";
+
+export function extractColumnValues(rows: DataRecord[], column: string): any[] {
+    return rows.map(row => row[column]);
+}
+
+export function detectColumnType(values: any[]): DataType {
+    // filter out null/undefined/empty string
+    const validValues = values.filter(val => val !== null && val !== undefined && val !== '');
+
+    if (validValues.length === 0) return 'text';
+
+    const sampleSize = Math.min(validValues.length, 100);
+    const sample = validValues.slice(0, sampleSize);
+
+    // boolean
+    const isBoolean = sample.every(v => {
+        if (typeof v === 'boolean') {
+            return true;
+        }
+
+        if (typeof v === 'string') {
+            const lower = String(v).toLowerCase().trim();
+            return ['true', 'false', 'yes', 'no', '1', '0'].includes(lower);
+
+
+        }
+        if (typeof v === 'number') {
+            return v === 0 || v === 1;
+
+        }
+
+        return false;
+
+    });
+
+    if (isBoolean) return 'boolean';
+
+    // numeric
+    const isNumeric = sample.every(v => {
+        if (typeof v === 'number') {
+            return true;
+
+        }
+
+        if (typeof v === 'string') {
+            const trimmed = v.trim();
+            if (trimmed === '') {
+                return false;
+            }
+
+
+            return !isNaN(Number(trimmed));
+        }
+
+
+        return false;
+
+    })
+    if (isNumeric) return 'numeric';
+
+    // datetime
+    const isDate = sample.every(v => {
+        if (typeof v === 'number') {
+            
+            return false;
+
+        }
+
+        if (v instanceof Date) {
+            return true;
+        }
+
+        if (typeof v === 'string') {
+            const trimmed = v.trim();
+            if (trimmed === '') {
+                return false;
+            }
+
+            // If it resembles purely a number, don't parse as date
+            if (!isNaN(Number(trimmed))) {
+                return false;
+            }
+
+            return !isNaN(Date.parse(trimmed));
+        }
+        return false;
+    })
+    if (isDate) {
+        return 'datetime';
+    }
+
+
+    // categorical
+
+    const uniqueItems = new Set(validValues.map(String));
+    const uniqueRatio = uniqueItems.size / validValues.length;
+
+    if (uniqueItems.size <= 20 || uniqueRatio < 0.1) {
+        return 'categorical';
+    }
+
+    return 'text';
+}
