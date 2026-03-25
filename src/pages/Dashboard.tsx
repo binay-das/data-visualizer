@@ -105,6 +105,15 @@ export default function Dashboard() {
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
+
+
+                                        <Button
+                                            className="w-full sm:w-auto"
+                                            onClick={() => navigate(`/dataset/${dataset.id}`)}
+                                        >
+                                            View Workspace
+                                        </Button>
+                                        
                                     </div>
                                 </div>
                             ))}
