@@ -3,14 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useDatasets } from "@/hooks/useDatasets";
 import { DropZone } from "@/components/file-upload/drop-zone";
 import { parseCSV, parseJSON, parseExcel, generateDataset } from "@/utils/fileParser";
-import { FileSpreadsheet, Clock, Database, Columns } from "lucide-react";
+import { FileSpreadsheet, Clock, Database, Columns, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
     const navigate = useNavigate();
-    const { datasets, addDataset } = useDatasets();
+    const { datasets, addDataset, deleteDataset } = useDatasets();
 
     const handleFileDrop = async (file: File) => {
         setIsProcessing(true);
@@ -93,6 +94,17 @@ export default function Dashboard() {
                                             <span className="flex items-center gap-1"><Columns className="h-3 w-3" /> {dataset.summary.columnCount} columns</span>
                                             <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(dataset.uploadedAt).toLocaleDateString()}</span>
                                         </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            className="text-destructive hover:bg-destructive hover:text-destructive-foreground shrink-0"
+                                            onClick={() => deleteDataset(dataset.id)}
+                                            title="Delete dataset"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
                                     </div>
                                 </div>
                             ))}
