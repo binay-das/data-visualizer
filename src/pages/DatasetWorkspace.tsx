@@ -1,10 +1,13 @@
+import { useState } from "react"
 import { useParams, Navigate } from "react-router-dom"
 import { useDatasets } from "@/hooks/useDatasets"
 import { DataTable } from "@/components/data-table/data-table"
+import { ChartBuilder } from "@/components/chart-builder/chart-builder"
 
 export default function DatasetWorkspace() {
     const { id } = useParams()
     const { datasets } = useDatasets()
+    const [view, setView] = useState<"table" | "charts">("table")
 
     if (!id) return <Navigate to="/dashboard" />
 
@@ -28,9 +31,27 @@ export default function DatasetWorkspace() {
                         {dataset.summary.rowCount.toLocaleString()} rows • {dataset.summary.columnCount} columns
                     </p>
                 </div>
+                <div className="flex items-center gap-1 bg-muted p-1 rounded-lg border">
+                    <button
+                        className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${view === 'table' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                        onClick={() => setView('table')}
+                    >
+                        Data Table
+                    </button>
+                    <button
+                        className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${view === 'charts' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                        onClick={() => setView('charts')}
+                    >
+                        Visualizations
+                    </button>
+                </div>
             </div>
             <div className="flex-1 p-6 overflow-hidden flex flex-col min-h-0 bg-muted/10">
-                <DataTable data={dataset.rows} columns={dataset.columns} />
+                {view === 'table' ? (
+                    <DataTable data={dataset.rows} columns={dataset.columns} />
+                ) : (
+                    <ChartBuilder data={dataset.rows} columns={dataset.columns} />
+                )}
             </div>
         </div>
     )
