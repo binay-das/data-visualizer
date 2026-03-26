@@ -30,7 +30,7 @@ export function ChartRenderer({ type, data, xAxis, yAxis }: ChartRendererProps) 
     if (type === 'bar' || type === 'line' || type === 'scatter') {
         if (!yAxis) return <div className="text-muted-foreground font-medium flex items-center justify-center h-full">Please select a Y-Axis.</div>;
 
-        const chartData = data.slice(0, 1000); 
+        const chartData = data.slice(0, 1000);
 
         return (
             <ResponsiveContainer width="100%" height="100%">
@@ -92,7 +92,7 @@ export function ChartRenderer({ type, data, xAxis, yAxis }: ChartRendererProps) 
                         innerRadius={80}
                         fill="var(--color-primary, #3b82f6)"
                         paddingAngle={2}
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, percent }) => `${name} ${(percent! * 100).toFixed(0)}%`}
                     >
                         {pieData.map((_entry, index) => (
                             <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
@@ -103,5 +103,49 @@ export function ChartRenderer({ type, data, xAxis, yAxis }: ChartRendererProps) 
         );
     }
 
-    return <div className="text-muted-foreground font-medium flex items-center justify-center h-full">Chart type "{type}" is coming in the next commit!</div>;
+    if (type === 'histogram') {
+        const values = data.map(d => Number(d[xAxis])).filter(v => !isNaN(v));
+        if (values.length === 0) return <div className="text-muted-foreground font-medium flex items-center justify-center h-full">No numeric data available in this column to bin.</div>;
+
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const binCount = 10;
+        const binSize = max === min ? 1 : (max - min) / binCount;
+
+        const bins = Array.from({ length: binCount }, (_, i) => {
+            const start = min + i * binSize;
+            const end = min + (i + 1) * binSize;
+            return {
+                name: `${start.toFixed(1)} - ${end.toFixed(1)}`,
+                count: 0
+            };
+        });
+
+        values.forEach(v => {
+            let index = Math.floor((v - min) / binSize);
+            if (index >= binCount) index = binCount - 1; // inclusive upper bound
+            if (index < 0) index = 0;
+            bins[index].count++;
+        });
+
+
+
+
+        return (
+            <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={bins} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.3} vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
+                    <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+                    <Tooltip contentStyle={{ borderRadius: '8px', backgroundColor: 'var(--card)', border: '1px solid var(--border)' }} />
+                    <Bar dataKey="count" fill="var(--color-primary, #3b82f6)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+
+            </ResponsiveContainer>
+        );
+    }
+
+
+
+    return <div className="text-muted-foreground font-medium flex items-center justify-center h-full">Chart type "{type}" is not supported.</div>;
 }
