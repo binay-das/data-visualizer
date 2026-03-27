@@ -218,12 +218,25 @@ export function analyzeDataset(rows: DataRecord[]): DatasetSummary {
     const columns = Object.keys(rows[0]);
     const columnStats = computeColumnStats(rows, columns);
 
+    // Identify numeric columns for correlation + outlier analysis
+    const numericCols = columnStats
+        .filter(c => c.type === 'numeric')
+        .map(c => c.name);
 
+    const correlationMatrix = numericCols.length >= 2
+        ? computeCorrelationMatrix(rows, numericCols)
+        : undefined;
+
+    const outliers = numericCols.length > 0
+        ? detectOutliers(rows, numericCols)
+        : undefined;
 
     return {
         rowCount: rows.length,
         columnCount: columns.length,
-        columns: columnStats
+        columns: columnStats,
+        correlationMatrix,
+        outliers
     };
 }
 
@@ -263,9 +276,8 @@ export function computePearsonCorrelation(a: number[], b: number[]): number {
     return denom === 0 ? 0 : num / denom;
 }
 
-/**
- * Generates an NxN Pearson correlation matrix for up to 20 numeric columns.
- */
+
+// Generates an NxN Pearson correlation matrix for up to 20 numeric columns.
 export function computeCorrelationMatrix(
     rows: DataRecord[],
     numericCols: string[]
@@ -338,6 +350,6 @@ export function detectOutliers(
 
         return { column: col, indices, values };
 
-        
+
     }).filter(d => d.indices.length > 0);
 }
