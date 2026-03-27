@@ -212,7 +212,7 @@ export function analyzeDataset(rows: DataRecord[]): DatasetSummary {
             columnCount: 0,
             columns: []
         };
-        
+
     }
 
     const columns = Object.keys(rows[0]);
@@ -225,4 +225,40 @@ export function analyzeDataset(rows: DataRecord[]): DatasetSummary {
         columnCount: columns.length,
         columns: columnStats
     };
+}
+
+
+
+
+
+
+
+
+
+
+export function computePearsonCorrelation(a: number[], b: number[]): number {
+    const n = Math.min(a.length, b.length);
+    if (n === 0) return NaN;
+
+
+    const meanA = a.slice(0, n).reduce((s, v) => s + v, 0) / n;
+    const meanB = b.slice(0, n).reduce((s, v) => s + v, 0) / n;
+
+
+
+    let num = 0, denomA = 0, denomB = 0;
+    for (let i = 0; i < n; i++) {
+        const da = a[i] - meanA;
+        const db = b[i] - meanB;
+        num += da * db;
+        denomA += da * da;
+        denomB += db * db;
+    }
+
+
+
+    const denom = Math.sqrt(denomA * denomB);
+
+    
+    return denom === 0 ? 0 : num / denom;
 }
