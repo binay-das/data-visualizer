@@ -259,6 +259,85 @@ export function computePearsonCorrelation(a: number[], b: number[]): number {
 
     const denom = Math.sqrt(denomA * denomB);
 
-    
+
     return denom === 0 ? 0 : num / denom;
+}
+
+/**
+ * Generates an NxN Pearson correlation matrix for up to 20 numeric columns.
+ */
+export function computeCorrelationMatrix(
+    rows: DataRecord[],
+    numericCols: string[]
+): { columns: string[]; matrix: number[][] } {
+    const cols = numericCols.slice(0, 20);
+
+    // Pre-extract clean numeric vectors
+    const vectors: number[][] = cols.map(col =>
+        rows.map(r => Number(r[col])).filter(v => !isNaN(v))
+    );
+
+    const n = cols.length;
+    const matrix: number[][] = Array.from({ length: n }, () => new Array(n).fill(0));
+
+    for (let i = 0; i < n; i++) {
+        for (let j = i; j < n; j++) {
+            if (i === j) {
+                matrix[i][j] = 1;
+            } else {
+                const r = computePearsonCorrelation(vectors[i], vectors[j]);
+                matrix[i][j] = r;
+                matrix[j][i] = r; // symmetric
+            }
+        }
+    }
+
+    return { columns: cols, matrix };
+}
+
+
+//      IQR-based outlier detection for numeric columns.
+//   an outlier is a value below Q1 - 1.5*IQR or above Q3 + 1.5*IQR.
+export function detectOutliers(
+    rows: DataRecord[],
+    numericCols: string[]
+): Array<{ column: string; indices: number[]; values: number[] }> {
+
+    return numericCols.map(col => {
+
+        const rawValues = rows.map((r, _) => Number(r[col]));
+        const nums = rawValues.filter(v => !isNaN(v));
+
+        if (nums.length === 0) return { column: col, indices: [], values: [] };
+
+        const sorted = [...nums].sort((a, b) => a - b);
+
+        const q1 = sorted[Math.floor(sorted.length * 0.25)];
+        const q3 = sorted[Math.floor(sorted.length * 0.75)];
+
+        const iqr = q3 - q1;
+
+        const lower = q1 - 1.5 * iqr;
+        const upper = q3 + 1.5 * iqr;
+
+
+        const indices: number[] = [];
+        const values: number[] = [];
+
+        rawValues.forEach((v, idx) => {
+            if (!isNaN(v) && (v < lower || v > upper)) {
+
+                indices.push(idx);
+                values.push(v);
+
+
+
+            }
+
+        });
+
+        return { column: col, indices, values };
+
+        
+    }).filter(d => d.indices.length > 0);
 }
