@@ -9,7 +9,7 @@ interface DatasetContextType {
     setCurrentDataset: (id: string | null) => void
     addDataset: (dataset: Dataset) => void
     deleteDataset: (id: string) => void
-    updateDatasetRows: (id: string, newRows: DataRecord[]) => void
+    updateDatasetRows: (id: string, newRows: DataRecord[], newColumns?: string[]) => void
 }
 
 const DatasetContext = createContext<DatasetContextType | undefined>(undefined)
@@ -45,13 +45,16 @@ export function DatasetProvider({ children }: { children: ReactNode }) {
         }
     }
 
-    const updateDatasetRows = (id: string, newRows: DataRecord[]) => {
+    
+    const updateDatasetRows = (id: string, newRows: DataRecord[], newColumns?: string[]) => {
         setDatasets(prev =>
-            prev.map(d =>
-                d.id === id
-                    ? { ...d, rows: newRows, summary: analyzeDataset(newRows) }
-                    : d
-            )
+            prev.map(d => {
+                if (d.id === id) {
+                    const columns = newColumns ?? d.columns
+                    return { ...d, rows: newRows, columns, summary: analyzeDataset(newRows) }
+                }
+                return d
+            })
         )
     }
 
