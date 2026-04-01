@@ -34,7 +34,8 @@ import {
     fillMissingValues,
     dropColumns,
     renameColumn
-} from "@/utils/dataCleaning";
+} from "@/utils/dataCleaning"
+import { toast } from "sonner";
 
 interface DataCleaningMenuProps {
     datasetId: string
@@ -84,12 +85,16 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
                 if (renameOld && renameNew && !newColumns.includes(renameNew)) {
                     newRows = renameColumn(newRows, renameOld, renameNew)
                     newColumns = newColumns.map(c => c === renameOld ? renameNew : c)
+                } else {
+                    toast.error("Invalid column rename parameters")
+                    return
                 }
                 break
         }
 
         updateDatasetRows(datasetId, newRows, newColumns)
         setOpenAction(null)
+        toast.success("Dataset cleaned successfully")
     }
 
     return (

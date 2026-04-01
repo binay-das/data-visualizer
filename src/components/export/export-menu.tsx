@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useDatasets } from "@/hooks/useDatasets";
 import { exportToCSV, exportToJSON, exportToExcel } from "@/utils/export";
+import { toast } from "sonner";
 
 interface ExportMenuProps {
     datasetId: string
@@ -26,19 +27,34 @@ export function ExportMenu({ datasetId }: ExportMenuProps) {
 
 
     const handleExportCSV = () => {
-        exportToCSV(dataset.rows, dataset.name || "export");
+        try {
+            exportToCSV(dataset.rows, dataset.name || "export")
+            toast.success("Dataset exported to CSV")
+        } catch (e) {
+            toast.error("Failed to export to CSV")
+        }
     }
 
     const handleExportJSON = () => {
-        exportToJSON(dataset.rows, dataset.name || "export");
+        try {
+            exportToJSON(dataset.rows, dataset.name || "export")
+            toast.success("Dataset exported to JSON")
+        } catch (e) {
+            toast.error("Failed to export to JSON")
+        }
     }
 
     const handleExportExcel = () => {
-        exportToExcel(dataset.rows, dataset.name || "export");
+        try {
+            exportToExcel(dataset.rows, dataset.name || "export")
+            toast.success("Dataset exported to Excel")
+        } catch (e) {
+            toast.error("Failed to export to Excel")
+        }
     }
 
 
-    
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 px-3">
