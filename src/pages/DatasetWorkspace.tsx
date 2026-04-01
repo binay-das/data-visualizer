@@ -6,6 +6,8 @@ import { ChartBuilder } from "@/components/chart-builder/chart-builder"
 import { CorrelationMatrix } from "@/components/correlation/correlation-matrix"
 import { OutlierSummary } from "@/components/outliers/outlier-summary"
 import { OutlierTable } from "@/components/outliers/outlier-table"
+import { DataCleaningMenu } from "@/components/data-cleaning/data-cleaning-menu"
+import { ExportMenu } from "@/components/export/export-menu"
 
 type WorkspaceView = "table" | "charts" | "correlation" | "outliers"
 
@@ -48,14 +50,18 @@ export default function DatasetWorkspace() {
                         <button
                             key={tab.id}
                             className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${view === tab.id
-                                    ? 'bg-background shadow text-foreground'
-                                    : 'text-muted-foreground hover:text-foreground'
+                                ? 'bg-background shadow text-foreground'
+                                : 'text-muted-foreground hover:text-foreground'
                                 }`}
                             onClick={() => setView(tab.id)}
                         >
                             {tab.label}
                         </button>
                     ))}
+                </div>
+                <div className="flex items-center gap-2">
+                    <DataCleaningMenu datasetId={dataset.id} columns={dataset.columns} />
+                    <ExportMenu datasetId={dataset.id} />
                 </div>
             </div>
 
