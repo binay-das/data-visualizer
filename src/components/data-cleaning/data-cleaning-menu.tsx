@@ -10,6 +10,16 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -58,43 +68,68 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
     const [renameOld, setRenameOld] = useState(columns[0] || "");
     const [renameNew, setRenameNew] = useState("");
 
+    const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
+
     if (!dataset) return null
 
-    const handleApply = () => {
-        if (!openAction) return
 
-        let newRows = [...dataset.rows]
-        let newColumns = [...dataset.columns]
+
+
+
+    const handleInitialApply = () => {
+        if (!openAction) {
+            return;
+        }
+
+        if (openAction === "duplicates" || openAction === "drop") {
+            setIsConfirmOpen(true);
+
+
+        } else {
+            executeAction();
+        }
+    }
+
+
+
+    const executeAction = () => {
+        if (!openAction) {
+            return;
+
+        }
+
+        let newRows = [...dataset.rows];
+        let newColumns = [...dataset.columns];
 
         switch (openAction) {
             case "duplicates":
-                newRows = removeDuplicates(newRows)
-                break
+                newRows = removeDuplicates(newRows);
+                break;
             case "missing":
                 if (missingCol) {
-                    newRows = fillMissingValues(newRows, missingCol, missingStrategy)
+                    newRows = fillMissingValues(newRows, missingCol, missingStrategy);
                 }
-                break
+                break;
             case "drop":
                 if (dropCol) {
-                    newRows = dropColumns(newRows, [dropCol])
-                    newColumns = newColumns.filter(c => c !== dropCol)
+                    newRows = dropColumns(newRows, [dropCol]);
+                    newColumns = newColumns.filter(c => c !== dropCol);
                 }
-                break
+                break;
             case "rename":
                 if (renameOld && renameNew && !newColumns.includes(renameNew)) {
-                    newRows = renameColumn(newRows, renameOld, renameNew)
-                    newColumns = newColumns.map(c => c === renameOld ? renameNew : c)
+                    newRows = renameColumn(newRows, renameOld, renameNew);
+                    newColumns = newColumns.map(c => c === renameOld ? renameNew : c);
                 } else {
-                    toast.error("Invalid column rename parameters")
-                    return
+                    toast.error("Invalid column rename parameters");
+                    return;
                 }
-                break
+                break;
         }
 
-        updateDatasetRows(datasetId, newRows, newColumns)
-        setOpenAction(null)
-        toast.success("Dataset cleaned successfully")
+        updateDatasetRows(datasetId, newRows, newColumns);
+        setOpenAction(null);
+        toast.success("Dataset cleaned successfully");
     }
 
     return (
@@ -221,11 +256,33 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
 
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setOpenAction(null)}>Cancel</Button>
-                    <Button onClick={handleApply}>
+                    <Button onClick={handleInitialApply}>
                         {openAction === "duplicates" ? "Remove Duplicates" : "Apply Changes"}
                     </Button>
                 </DialogFooter>
             </DialogContent>
+
+            <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action is destructive and cannot be undone.
+                            {openAction === "drop" && ` You are about to permanently remove the "${dropCol}" column.`}
+                            {openAction === "duplicates" && " You are about to remove duplicate rows."}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => {
+                            setIsConfirmOpen(false)
+                            executeAction()
+                        }}>
+                            Continue
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </Dialog>
     )
 }
