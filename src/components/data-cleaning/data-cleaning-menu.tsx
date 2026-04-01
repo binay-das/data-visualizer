@@ -38,14 +38,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-import { useDatasets } from "@/hooks/useDatasets";
-import {
-    removeDuplicates,
-    fillMissingValues,
-    dropColumns,
-    renameColumn
-} from "@/utils/dataCleaning"
-import { toast } from "sonner";
+import { useDatasets } from "@/hooks/useDatasets"
+import { useDataCleaning } from "@/hooks/useDataCleaning"
 
 interface DataCleaningMenuProps {
     datasetId: string
@@ -55,8 +49,9 @@ interface DataCleaningMenuProps {
 type CleaningAction = "duplicates" | "missing" | "drop" | "rename" | null
 
 export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) {
-    const { datasets, updateDatasetRows } = useDatasets();
-    const dataset = datasets.find(d => d.id === datasetId);
+    const { datasets } = useDatasets()
+    const { removeDuplicates, fillMissingValues, dropColumn, renameColumn } = useDataCleaning()
+    const dataset = datasets.find(d => d.id === datasetId)
 
     const [openAction, setOpenAction] = useState<CleaningAction>(null);
 
@@ -89,7 +84,7 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
         return true;
     }
 
-    
+
 
     const handleInitialApply = () => {
         if (!openAction) {
@@ -108,43 +103,30 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
 
 
     const executeAction = () => {
-        if (!openAction) {
-            return;
-
-        }
-
-        let newRows = [...dataset.rows];
-        let newColumns = [...dataset.columns];
+        if (!openAction) return
 
         switch (openAction) {
             case "duplicates":
-                newRows = removeDuplicates(newRows);
+                removeDuplicates(datasetId);
                 break;
             case "missing":
                 if (missingCol) {
-                    newRows = fillMissingValues(newRows, missingCol, missingStrategy);
+                    fillMissingValues(datasetId, missingCol, missingStrategy);
                 }
                 break;
             case "drop":
                 if (dropCol) {
-                    newRows = dropColumns(newRows, [dropCol]);
-                    newColumns = newColumns.filter(c => c !== dropCol);
+                    dropColumn(datasetId, dropCol);
                 }
-                break;
+                break
             case "rename":
-                if (renameOld && renameNew && !newColumns.includes(renameNew)) {
-                    newRows = renameColumn(newRows, renameOld, renameNew);
-                    newColumns = newColumns.map(c => c === renameOld ? renameNew : c);
-                } else {
-                    toast.error("Invalid column rename parameters");
-                    return;
-                }
+                renameColumn(datasetId, renameOld, renameNew);
                 break;
         }
 
-        updateDatasetRows(datasetId, newRows, newColumns);
         setOpenAction(null);
-        toast.success("Dataset cleaned successfully");
+
+        
     }
 
     return (
