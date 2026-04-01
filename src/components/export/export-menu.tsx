@@ -25,8 +25,14 @@ export function ExportMenu({ datasetId }: ExportMenuProps) {
     }
 
 
+    
 
     const handleExportCSV = () => {
+        if (!dataset.rows.length) {
+            return toast.error("Dataset is empty");
+        }
+
+
         try {
             exportToCSV(dataset.rows, dataset.name || "export")
             toast.success("Dataset exported to CSV")
@@ -36,6 +42,10 @@ export function ExportMenu({ datasetId }: ExportMenuProps) {
     }
 
     const handleExportJSON = () => {
+        if (!dataset.rows.length) {
+            return toast.error("Dataset is empty");
+        }
+
         try {
             exportToJSON(dataset.rows, dataset.name || "export")
             toast.success("Dataset exported to JSON")
@@ -45,6 +55,7 @@ export function ExportMenu({ datasetId }: ExportMenuProps) {
     }
 
     const handleExportExcel = () => {
+        if (!dataset.rows.length) return toast.error("Dataset is empty")
         try {
             exportToExcel(dataset.rows, dataset.name || "export")
             toast.success("Dataset exported to Excel")
