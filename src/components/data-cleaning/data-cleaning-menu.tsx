@@ -68,13 +68,28 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
     const [renameOld, setRenameOld] = useState(columns[0] || "");
     const [renameNew, setRenameNew] = useState("");
 
-    const [isConfirmOpen, setIsConfirmOpen] = useState<boolean>(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
     if (!dataset) return null
 
+    const isValid = () => {
+        if (openAction === "rename") {
+            return !!renameOld && !!renameNew;
+        }
+
+        if (openAction === "missing") {
+            return !!missingCol;
+        }
+
+        if (openAction === "drop") {
+            return !!dropCol;
+        }
 
 
+        return true;
+    }
 
+    
 
     const handleInitialApply = () => {
         if (!openAction) {
@@ -256,7 +271,7 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
 
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setOpenAction(null)}>Cancel</Button>
-                    <Button onClick={handleInitialApply}>
+                    <Button onClick={handleInitialApply} disabled={!isValid()}>
                         {openAction === "duplicates" ? "Remove Duplicates" : "Apply Changes"}
                     </Button>
                 </DialogFooter>
