@@ -11,6 +11,7 @@ import {
 import { useDatasets } from "@/hooks/useDatasets";
 import { exportToCSV, exportToJSON, exportToExcel } from "@/utils/export";
 import { toast } from "sonner";
+import { getTimestampSuffix } from "@/utils/formatters";
 
 interface ExportMenuProps {
     datasetId: string
@@ -25,7 +26,7 @@ export function ExportMenu({ datasetId }: ExportMenuProps) {
     }
 
 
-    
+
 
     const handleExportCSV = () => {
         if (!dataset.rows.length) {
@@ -34,7 +35,7 @@ export function ExportMenu({ datasetId }: ExportMenuProps) {
 
 
         try {
-            exportToCSV(dataset.rows, dataset.name || "export")
+            exportToCSV(dataset.rows, `${dataset.name || "export"}_${getTimestampSuffix()}`)
             toast.success("Dataset exported to CSV")
         } catch (e) {
             toast.error("Failed to export to CSV")
@@ -47,7 +48,7 @@ export function ExportMenu({ datasetId }: ExportMenuProps) {
         }
 
         try {
-            exportToJSON(dataset.rows, dataset.name || "export")
+            exportToJSON(dataset.rows, `${dataset.name || "export"}_${getTimestampSuffix()}`);
             toast.success("Dataset exported to JSON")
         } catch (e) {
             toast.error("Failed to export to JSON")
@@ -55,9 +56,12 @@ export function ExportMenu({ datasetId }: ExportMenuProps) {
     }
 
     const handleExportExcel = () => {
-        if (!dataset.rows.length) return toast.error("Dataset is empty")
+        if (!dataset.rows.length) {
+            return toast.error("Dataset is empty");
+        }
+
         try {
-            exportToExcel(dataset.rows, dataset.name || "export")
+            exportToExcel(dataset.rows, `${dataset.name || "export"}_${getTimestampSuffix()}`);
             toast.success("Dataset exported to Excel")
         } catch (e) {
             toast.error("Failed to export to Excel")
