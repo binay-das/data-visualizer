@@ -4,6 +4,14 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { DataTableToolbar } from "./data-table-toolbar";
 
+export type FilterOperator = "equals" | "contains" | "greater" | "less";
+export interface ColumnFilter {
+    id: string;
+    column: string;
+    operator: FilterOperator;
+    value: string;
+}
+
 interface DataTableProps {
     data: DataRecord[];
     columns: string[];
@@ -17,6 +25,7 @@ export function DataTable({ data, columns }: DataTableProps) {
     const [sortColumn, setSortColumn] = useState<string | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>(null);
     const [globalFilter, setGlobalFilter] = useState("");
+    const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
     const [visibleColumns, setVisibleColumns] = useState<Set<string>>(new Set(columns));
 
     const activeColumns = columns.filter(c => visibleColumns.has(c));
@@ -45,6 +54,35 @@ export function DataTable({ data, columns }: DataTableProps) {
             });
         }
 
+        if (columnFilters.length > 0) {
+            result = result.filter(row => {
+                return columnFilters.every(filter => {
+                    if (!filter.column || !filter.value) return true;
+
+                    const rowValue = row[filter.column];
+                    if (rowValue === null || rowValue === undefined) return false;
+
+                    const strVal = String(rowValue).toLowerCase();
+                    const filterVal = filter.value.toLowerCase();
+                    const numRowVal = Number(rowValue);
+                    const numFilterVal = Number(filter.value);
+
+                    switch (filter.operator) {
+                        case "equals":
+                            return strVal === filterVal || (String(rowValue) === filter.value);
+                        case "contains":
+                            return strVal.includes(filterVal);
+                        case "greater":
+                            return !isNaN(numRowVal) && !isNaN(numFilterVal) && numRowVal > numFilterVal;
+                        case "less":
+                            return !isNaN(numRowVal) && !isNaN(numFilterVal) && numRowVal < numFilterVal;
+                        default:
+                            return true;
+                    }
+                });
+            });
+        }
+
         if (!sortColumn || !sortDirection) return result;
 
         return [...result].sort((a, b) => {
@@ -65,11 +103,11 @@ export function DataTable({ data, columns }: DataTableProps) {
             if (strA > strB) return sortDirection === "asc" ? 1 : -1;
             return 0;
         });
-    }, [data, activeColumns, sortColumn, sortDirection, globalFilter]);
+    }, [data, activeColumns, sortColumn, sortDirection, globalFilter, columnFilters]);
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [globalFilter, rowsPerPage]);
+    }, [globalFilter, columnFilters, rowsPerPage]);
 
     const totalPages = Math.ceil(filteredAndSortedData.length / rowsPerPage) || 1;
     const paginatedData = filteredAndSortedData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
@@ -84,9 +122,11 @@ export function DataTable({ data, columns }: DataTableProps) {
                 allColumns={columns}
                 visibleColumns={visibleColumns}
                 setVisibleColumns={setVisibleColumns}
+                columnFilters={columnFilters}
+                setColumnFilters={setColumnFilters}
             />
 
-            
+
             <div className="flex-1 overflow-auto">
                 <table className="w-full text-sm text-left">
                     <thead className="text-xs uppercase bg-muted/50 sticky top-0 z-10 shadow-sm backdrop-blur-md">
