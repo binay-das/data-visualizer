@@ -88,7 +88,7 @@ export function DropZone({ onFileDrop, isProcessing = false }: DropZoneProps) {
 
     return (
         <div className="flex flex-col gap-4 w-full">
-            <div className={`border-2 border-dashed rounded-xl p-12 text-center transition-colors ${isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/50"
+            <div className={`border-2 border-dashed rounded-xl p-12 text-center transition-colors ${isDragActive ? "border-foreground bg-muted" : "border-muted-foreground/25 hover:border-foreground/50"
                 } ${isProcessing ? "opacity-50 pointer-events-none" : "cursor-pointer"} `}
 
                 onDragOver={handleDragOver}
@@ -104,7 +104,7 @@ export function DropZone({ onFileDrop, isProcessing = false }: DropZoneProps) {
                     accept=".csv,.json,.xlsx"
                 />
                 <div className="flex flex-col items-center justify-center gap-4">
-                    <UploadCloud className={`h-12 w-12 ${isDragActive ? "text-primary" : "text-muted-foreground"} `} />
+                    <UploadCloud className={`h-12 w-12 ${isDragActive ? "text-foreground" : "text-muted-foreground/50"} `} />
                     <div>
                         <h3 className="text-xl font-semibold">Drop your dataset here or click to browse</h3>
                         <p className="text-sm text-muted-foreground mt-2">Supports CSV, JSON, and Excel files</p>

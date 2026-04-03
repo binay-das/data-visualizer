@@ -83,7 +83,7 @@ export default function Dashboard() {
                                 <div key={dataset.id} className="bg-card border rounded-xl p-5 shadow-sm transition-shadow hover:shadow-md flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <FileSpreadsheet className="h-5 w-5 text-primary" />
+                                            <FileSpreadsheet className="h-5 w-5 text-foreground" />
                                             <h3 className="font-semibold text-lg max-w-[200px] sm:max-w-[300px] truncate" title={dataset.name}>{dataset.name}</h3>
                                             <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground font-medium uppercase tracking-wider">
                                                 {dataset.fileType}
@@ -113,7 +113,7 @@ export default function Dashboard() {
                                         >
                                             View Workspace
                                         </Button>
-                                        
+
                                     </div>
                                 </div>
                             ))}
