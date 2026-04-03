@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDatasets } from "@/hooks/useDatasets";
-import { Zap, Shield, BarChart3 } from "lucide-react";
+import { Zap, Shield, BarChart3, Heart, Github, GithubIcon } from "lucide-react";
 import { DropZone } from "@/components/file-upload/drop-zone";
 import { parseCSV, parseJSON, parseExcel, generateDataset } from "@/utils/fileParser";
 
@@ -79,7 +79,7 @@ export default function LandingPage() {
                 </div>
             </main>
 
-            <section className="bg-muted/30 border-t py-24">
+            <section className="bg-background border-t py-24">
                 <div className="container mx-auto px-4 max-w-5xl">
                     <div className="grid md:grid-cols-3 gap-12 text-center">
                         <div className="flex flex-col items-center space-y-4">
@@ -106,6 +106,47 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
+
+            <section className="bg-muted/30 border-t py-24">
+                <div className="container mx-auto px-4 max-w-5xl">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl font-bold tracking-tight">How it works</h2>
+                        <p className="text-muted-foreground mt-4">Three simple steps to unlock your data.</p>
+                    </div>
+                    <div className="grid md:grid-cols-3 gap-8 text-center max-w-4xl mx-auto">
+                        <div className="flex flex-col items-center">
+                            <div className="w-12 h-12 rounded-full bg-background border flex items-center justify-center font-bold text-lg mb-4 text-foreground">1</div>
+                            <h3 className="font-semibold text-lg text-foreground">Upload Data</h3>
+                            <p className="text-sm text-muted-foreground mt-2">Drop your CSV, JSON, or Excel file into the secure dropzone.</p>
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <div className="w-12 h-12 rounded-full bg-background border flex items-center justify-center font-bold text-lg mb-4 text-foreground">2</div>
+                            <h3 className="font-semibold text-lg text-foreground">Analyze & Clean</h3>
+                            <p className="text-sm text-muted-foreground mt-2">Filter duplicates, handle missing values, and view detailed statistics instantly.</p>
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <div className="w-12 h-12 rounded-full bg-background border flex items-center justify-center font-bold text-lg mb-4 text-foreground">3</div>
+                            <h3 className="font-semibold text-lg text-foreground">Export Insights</h3>
+                            <p className="text-sm text-muted-foreground mt-2">Generate charts, find outliers, and export the cleaned data back to your device.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer className="border-t py-8 mt-auto bg-background">
+                <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-sm text-muted-foreground">
+
+                    <div className="mt-4 md:mt-0">
+                        <a href="https://github.com/binay-das/data-visualizer" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors font-medium">
+                            <GithubIcon className="w-4 h-4 inline" /> Source Code
+                        </a>
+                    </div>
+
+                    <p className="flex justify-center items-center gap-1">
+                        Made with <Heart className="w-4 h-4 inline" /> by <a href="https://github.com/binay-das" target="_blank" rel="noopener noreferrer" className="font-medium text-foreground hover:underline">binay</a>
+                    </p>
+                </div>
+            </footer>
         </div>
     )
 }
