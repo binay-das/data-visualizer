@@ -4,7 +4,8 @@ import {
     removeDuplicates,
     fillMissingValues,
     dropColumns,
-    renameColumn
+    renameColumn,
+    groupData
 } from "@/utils/dataCleaning";
 
 export function useDataCleaning() {
@@ -74,10 +75,26 @@ export function useDataCleaning() {
         toast.success(`Column ${oldName} renamed to ${newName}`);
     }
 
+    const handleGroupData = (datasetId: string, groupCol: string, aggCol: string, method: 'sum' | 'avg' | 'count' | 'min' | 'max') => {
+        const dataset = datasets.find(d => d.id === datasetId);
+        if (!dataset) return;
+
+        if (!groupCol || !aggCol) {
+            toast.error("Please select valid columns for grouping and aggregation");
+            return;
+        }
+
+        const newRows = groupData(dataset.rows, groupCol, aggCol, method);
+        const newColumns = Object.keys(newRows[0] || {});
+        updateDatasetRows(datasetId, newRows, newColumns);
+        toast.success(`Data grouped by ${groupCol} using ${method} of ${aggCol}`);
+    };
+
     return {
         removeDuplicates: handleRemoveDuplicates,
         fillMissingValues: handleFillMissingValues,
         dropColumn: handleDropColumn,
-        renameColumn: handleRenameColumn
+        renameColumn: handleRenameColumn,
+        groupData: handleGroupData
     }
 }

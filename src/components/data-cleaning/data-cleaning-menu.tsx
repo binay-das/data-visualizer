@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Wand2, CopyX, Droplets, Eraser, PenLine } from "lucide-react";
+import { Wand2, CopyX, Droplets, Eraser, PenLine, TableProperties } from "lucide-react";
 
 import {
     Dialog,
@@ -46,11 +46,11 @@ interface DataCleaningMenuProps {
     columns: string[]
 }
 
-type CleaningAction = "duplicates" | "missing" | "drop" | "rename" | null
+type CleaningAction = "duplicates" | "missing" | "drop" | "rename" | "group" | null
 
 export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) {
     const { datasets } = useDatasets()
-    const { removeDuplicates, fillMissingValues, dropColumn, renameColumn } = useDataCleaning()
+    const { removeDuplicates, fillMissingValues, dropColumn, renameColumn, groupData } = useDataCleaning()
     const dataset = datasets.find(d => d.id === datasetId)
 
     const [openAction, setOpenAction] = useState<CleaningAction>(null);
@@ -62,6 +62,10 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
 
     const [renameOld, setRenameOld] = useState(columns[0] || "");
     const [renameNew, setRenameNew] = useState("");
+
+    const [groupCol, setGroupCol] = useState(columns[0] || "");
+    const [aggCol, setAggCol] = useState(columns[0] || "");
+    const [aggMethod, setAggMethod] = useState<'sum' | 'avg' | 'count' | 'min' | 'max'>('sum');
 
     const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 
@@ -80,6 +84,10 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
             return !!dropCol;
         }
 
+
+        if (openAction === "group") {
+            return !!groupCol && !!aggCol;
+        }
 
         return true;
     }
@@ -122,6 +130,9 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
             case "rename":
                 renameColumn(datasetId, renameOld, renameNew);
                 break;
+            case "group":
+                groupData(datasetId, groupCol, aggCol, aggMethod);
+                break;
         }
 
         setOpenAction(null);
@@ -155,6 +166,10 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
                         <PenLine className="h-4 w-4 mr-2" />
                         Rename Column
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setOpenAction("group")}>
+                        <TableProperties className="h-4 w-4 mr-2" />
+                        Group Data (Pivot)
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
 
@@ -165,12 +180,14 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
                         {openAction === "missing" && "Fill Missing Values"}
                         {openAction === "drop" && "Drop Column"}
                         {openAction === "rename" && "Rename Column"}
+                        {openAction === "group" && "Group Data (Pivot)"}
                     </DialogTitle>
                     <DialogDescription>
                         {openAction === "duplicates" && "This will remove all entirely duplicate rows from your dataset. This action cannot be easily undone."}
                         {openAction === "missing" && "Choose a column and a strategy to fill in empty or null values."}
                         {openAction === "drop" && "Select a column to permanently remove from this dataset."}
                         {openAction === "rename" && "Provide a new name for an existing column."}
+                        {openAction === "group" && "Select a category column and a numeric column to aggregate data. Note: this will replace the current view with the grouped data."}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -246,6 +263,52 @@ export function DataCleaningMenu({ datasetId, columns }: DataCleaningMenuProps) 
                                     value={renameNew}
                                     onChange={e => setRenameNew(e.target.value)}
                                 />
+                            </div>
+                        </>
+                    )}
+
+                    {openAction === "group" && (
+                        <>
+                            <div className="grid gap-2">
+                                <Label>Group By (Category)</Label>
+                                <Select value={groupCol} onValueChange={(val) => { if (val) setGroupCol(val) }}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select column snippet" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {columns.map(c => (
+                                            <SelectItem key={c} value={c}>{c}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label>Aggregate Column (Value)</Label>
+                                <Select value={aggCol} onValueChange={(val) => { if (val) setAggCol(val) }}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select numeric column" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {columns.map(c => (
+                                            <SelectItem key={c} value={c}>{c}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label>Method</Label>
+                                <Select value={aggMethod} onValueChange={(val) => { if (val) setAggMethod(val as any) }}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select aggregation" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="sum">Sum</SelectItem>
+                                        <SelectItem value="avg">Average</SelectItem>
+                                        <SelectItem value="count">Count</SelectItem>
+                                        <SelectItem value="max">Max</SelectItem>
+                                        <SelectItem value="min">Min</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </>
                     )}

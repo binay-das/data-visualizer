@@ -109,3 +109,53 @@ export function renameColumn(rows: DataRecord[], oldName: string, newName: strin
         return newRow;
     });
 }
+
+export function groupData(
+    rows: DataRecord[],
+    groupCol: string,
+    aggCol: string,
+    method: 'sum' | 'avg' | 'count' | 'min' | 'max'
+): DataRecord[] {
+    const map = new Map<string, number[]>();
+
+    for (const row of rows) {
+        const key = String(row[groupCol] || "Unknown");
+        if (!map.has(key)) map.set(key, []);
+
+        const val = Number(row[aggCol]);
+        if (!isNaN(val)) {
+            map.get(key)!.push(val);
+        }
+    }
+
+    const result: DataRecord[] = [];
+    map.forEach((values, key) => {
+        let aggValue = 0;
+        if (values.length > 0) {
+            switch (method) {
+                case "sum":
+                    aggValue = values.reduce((a, b) => a + b, 0);
+                    break;
+                case "avg":
+                    aggValue = values.reduce((a, b) => a + b, 0) / values.length;
+                    break;
+                case "count":
+                    aggValue = values.length;
+                    break;
+                case "min":
+                    aggValue = Math.min(...values);
+                    break;
+                case "max":
+                    aggValue = Math.max(...values);
+                    break;
+            }
+        }
+
+        result.push({
+            [groupCol]: key,
+            [`${method}_of_${aggCol}`]: aggValue
+        });
+    });
+
+    return result;
+}
