@@ -1,73 +1,61 @@
-# React + TypeScript + Vite
+# DataScope - Client-Side Dataset Visualizer 📊
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![DataScope](https://img.shields.io/badge/Status-Live-brightgreen.svg) ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
-Currently, two official plugins are available:
+DataScope is a powerful, lightning-fast, and completely client-side data analysis and visualization tool. Simply upload your datasets (CSV, JSON, or Excel) to instantly clean, manipulate, pivot, and visualize your data securely within the browser. **No servers, no queues, 100% private.**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+🌍 **Live Demo:** [https://data-visualizer-peach.vercel.app](https://data-visualizer-peach.vercel.app)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the ESLint configuration
+### 📁 Advanced Ingestion
+- **Formats Supported:** Seamlessly imports `CSV`, `JSON`, and `Excel (.xlsx/.xls)`.
+- **Drag & Drop Workspace:** Drop files directly into the secure dropzone to launch the workspace instantly.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🧹 Data Cleaning Engine
+- **Fix Missing Data:** Fill null values intelligently (Mean, Median, Mode, Zero, or Empty Strings).
+- **Shape Datasets:** Easily rename or drop irrelevant columns.
+- **Deduplication:** Remove completely identical rows with a click.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 🔄 Data Transformation & Pivoting
+- **Pivot Tables (Grouping):** Roll up your datasets by categorical columns to aggregate numeric values using `Sum`, `Average`, `Count`, `Min`, or `Max`.
+- **Advanced Filtering/Sorting:** A robust query builder allowing multiple rules natively on the data tables (`greater than`, `less than`, `contains`, `equals`).
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 📈 Instant Visualizations & Insights
+- **Chart Builder:** Convert metrics dynamically into Bar, Line, Scatter, Pie, or Histogram charts without touching a spreadsheet.
+- **Statistical Analysis:** View Pearson Correlation Matrices automatically computed for matching continuous variables, highlighting positive and negative correlations.
+- **Outlier Detection:** Intelligent system parses numerical boundaries and detects interquartile (IQR) outliers on the fly.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 💾 Export Anywhere
+- Cleaned and prepared data stays local until you push it out. Export refined datasets backward to cleanly formatted `CSV`, `JSON`, or `Excel` sheets.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🛠️ Technology Stack
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **Framework:** React 19 + Vite
+- **Styling:** Tailwind CSS v4 + minimal/monochrome Shadcn (Base-UI integration)
+- **Icons:** Lucide React
+- **Charting:** Recharts
+- **Parsers:** PapaParse (CSV), XLSX (Excel)
+- **Deployment:** Vercel
+
+
+
+---
+
+## 🔒 Privacy & Architecture
+
+The key philosophy embedded in DataScope is pure localization. Data processing is shifted away from traditional backend Python wrappers (like Pandas) entirely to the edge inside the browser's JavaScript engine. Your uploaded files intentionally **never touch an external server database**.
+
+---
+
+## 🤝 Contributing
+
+Contributions are always welcome. Just fork this repository, create and checkout your feature branch, commit your polished code, and push the branch to open a Pull Request.
+
+---
+
+*Made with love by [binay](https://github.com/binay-das)*
