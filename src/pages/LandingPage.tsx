@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDatasets } from "@/hooks/useDatasets";
-import { Zap, Shield, BarChart3, Heart, Github, GithubIcon } from "lucide-react";
+import { Zap, Shield, BarChart3, Heart, GithubIcon } from "lucide-react";
 import { DropZone } from "@/components/file-upload/drop-zone";
 import { parseCSV, parseJSON, parseExcel, generateDataset } from "@/utils/fileParser";
 
