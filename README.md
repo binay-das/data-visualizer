@@ -1,6 +1,5 @@
 # DataScope - Client-Side Dataset Visualizer 📊
 
-![DataScope](https://img.shields.io/badge/Status-Live-brightgreen.svg) ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 
 DataScope is a powerful, lightning-fast, and completely client-side data analysis and visualization tool. Simply upload your datasets (CSV, JSON, or Excel) to instantly clean, manipulate, pivot, and visualize your data securely within the browser. **No servers, no queues, 100% private.**
 
